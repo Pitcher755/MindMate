@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'package:mindmate/core/app_colors.dart';
+
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
@@ -7,20 +8,20 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.background,
     primaryColor: AppColors.primary,
     appBarTheme: AppBarTheme(
-      color: AppColors.primary,
+      backgroundColor: AppColors.primary,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: TextStyle(
+      titleTextStyle: const TextStyle(
         color: AppColors.white,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       bodyLarge: TextStyle(color: AppColors.textPrimary),
       bodyMedium: TextStyle(color: AppColors.textSecondary),
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.primary,
     ),
     colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -30,6 +31,42 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    ),
+  );
+
+  static ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: AppColors.backgroundDark,
+    primaryColor: AppColors.primaryDark,
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.primaryDark,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: const TextStyle(
+        color: AppColors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: AppColors.textPrimaryDark),
+      bodyMedium: TextStyle(color: AppColors.textSecondaryDark),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primaryDark,
+    ),
+    colorScheme: ColorScheme.dark().copyWith(
+      secondary: AppColors.accentYellow,
+      error: AppColors.errorRed,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryDark,
         foregroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
