@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 10),
             const Text(
-              "Tu compañero para calmar la mente 🧘",
+              "Tu compañera para calmar la mente 🧘",
               style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
           ],
