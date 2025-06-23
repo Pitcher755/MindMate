@@ -6,21 +6,23 @@ class UserModel {
   final String name;
   final String? profileImageUrl;
   final List<String> goals;
-  final DateTime createdAt;
+  // final DateTime createdAt;
   final bool isAnonymous;
   final List<String>? completedChallenges;
   final List<Map<String, dynamic>>? moodHistory;
+  final String? mood;
 
   UserModel({
     required this.uid,
     required this.email,
     required this.name,
     required this.goals,
-    required this.createdAt,
+    // required this.createdAt,
     required this.isAnonymous,
     this.profileImageUrl,
     this.completedChallenges,
     this.moodHistory,
+    this.mood,
   });
 
   // Serializar el modelo para subirlo a Firestore
@@ -31,7 +33,7 @@ class UserModel {
       'name': name,
       'profileImageUrl': profileImageUrl,
       'goals': goals,
-      'createdAt': createdAt.toIso8601String(),
+      // 'createdAt': createdAt.toIso8601String(),
       'isAnonymoud': isAnonymous,
       'completedChallenges': completedChallenges ?? [],
       'moodHistory': moodHistory ?? [],
@@ -48,12 +50,30 @@ class UserModel {
       name: data['name'],
       profileImageUrl: data['profileImageUrl'],
       goals: List<String>.from(data['goals']),
-      createdAt: DateTime.parse(data['createdAt']),
+      // createdAt: DateTime.parse(data['createdAt']),
       isAnonymous: data['isAnonymous'] ?? false,
       completedChallenges: (data['completedChallenges'] as List?)
           ?.cast<String>(),
-      moodHistory: (data['moodHistory'] as List?)
-          ?.cast<Map<String, dynamic>>(),
+      moodHistory: (data['moodHistory'] as List?)?.cast<Map<String, dynamic>>(),
+    );
+  }
+
+  UserModel copyWith({
+    String? name,
+    String? email,
+    String? profileImageUrl,
+    List<String>? goals,
+    String? mood,
+  }) {
+    return UserModel(
+      uid: uid,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      goals: goals ?? this.goals,
+      mood: mood,
+      isAnonymous: false,
     );
   }
 }
+

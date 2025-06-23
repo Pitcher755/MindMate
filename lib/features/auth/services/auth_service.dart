@@ -87,4 +87,27 @@ class AuthService {
 
   // Obtener UID actual
   String? getCurrentUid() => _auth.currentUser?.uid;
+
+  Future<void> saveUserToFirestore(UserModel user, {File? profileImageFile}) async {
+    try {
+      String? imageUrl;
+
+      //1. Sube la imagen de perfil si hay una nueva
+      if (profileImageFile != null) {
+        final storageRef = _storage.ref().child('profile_images/${user.uid}.jpg');
+        final uploadTask = await storageRef.putFile(profileImageFile);
+        imageUrl = await uploadTask.ref.getDownloadURL();
+      }
+
+      //2. Crea una copia del modelo con la URL si se subió imagen
+      final updateUser = user.copyWith(
+        profileImageUrl: imageUrl ??  user.profileImageUrl,
+      );
+
+      //3. Guarda el documento en Firestore
+      await _db.collection('users').doc(user.uid).set(updateUser.toMap());
+    } catch (e) {
+      throw Exception('Error al guardar usuario en Firestore: $e');
+    }
+  }
 }

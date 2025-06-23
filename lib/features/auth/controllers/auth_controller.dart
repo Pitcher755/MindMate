@@ -121,5 +121,18 @@ class AuthController extends Notifier<User?> {
     if (mood != null) _mood = mood;
   }
 
-  
+  Future<void> submitRegistration(String uid, String email) async {
+    final user = UserModel(
+      uid: uid,
+      email: email,
+      name: _name ?? '',
+      profileImageUrl: '', // URL subida a Firebase Storage
+      goals: _goals,
+      mood: _mood ?? '',
+      isAnonymous: false,
+      
+    );
+
+    await _authService.saveUserToFirestore(user, profileImageFile: _profileImageFile);
+  }
 }
