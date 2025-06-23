@@ -10,9 +10,9 @@ import 'package:mindmate/models/user_model.dart';
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 // Estado para el usuario actual
-// final authUserProvider = StateProvider<User?>(
-//   (ref) => FirebaseAuth.instance.currentUser,
-// );
+final authUserProvider = StateProvider<User?>(
+  (ref) => FirebaseAuth.instance.currentUser,
+);
 
 // Controlador de autenticación principal
 final authControllerProvider = NotifierProvider<AuthController, User?>(() {
@@ -102,4 +102,24 @@ class AuthController extends Notifier<User?> {
 
   // UID del usuario actual
   String? get currentUID => _authService.getCurrentUid();
+
+  // Guardado en memoria de datos de perfil temporales antes de pasar a Firestore
+  String? _name;
+  File? _profileImageFile;
+  List<String> _goals = [];
+  String? _mood;
+
+  void updatePartialUserData({
+    String? name,
+    File? profileImageFile,
+    List<String>? goals,
+    String? mood,
+  }) {
+    if (name != null) _name = name;
+    if (profileImageFile != null) _profileImageFile = profileImageFile;
+    if (goals != null) _goals = goals;
+    if (mood != null) _mood = mood;
+  }
+
+  
 }
