@@ -62,7 +62,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   children: [
                     RegisterEmailView(onNext: nextPage),
                     RegisterProfileView(onNext: nextPage, onBack: previousPage),
-                    RegisterGoalsView(onNext: nextPage,onBack: previousPage),
+                    RegisterGoalsView(onBack: previousPage),
                   ],
                 ),
               ),
