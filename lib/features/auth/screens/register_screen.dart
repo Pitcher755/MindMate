@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/auth/widgets/register_email_view.dart';
+import 'package:mindmate/features/auth/widgets/register_goals_view.dart';
+import 'package:mindmate/features/auth/widgets/register_profile_view.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -59,8 +61,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     RegisterEmailView(onNext: nextPage),
-                    // RegisterProfileView(onNext: nextPage, onBack: previousPage),
-                    // RegisterGoalsView(onBack: previousPage),
+                    RegisterProfileView(onNext: nextPage, onBack: previousPage),
+                    RegisterGoalsView(onNext: nextPage,onBack: previousPage),
                   ],
                 ),
               ),

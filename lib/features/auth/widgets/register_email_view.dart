@@ -65,6 +65,7 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
     return Center(
       child: SingleChildScrollView(
         child: Card(
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.radius),
           ),
