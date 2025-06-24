@@ -4,10 +4,7 @@
 
 
 import 'package:go_router/go_router.dart';
-import 'package:mindmate/features/auth/screens/login_screen.dart';
-import 'package:mindmate/features/auth/screens/register_screen.dart';
 import 'package:mindmate/features/auth/screens/welcome_screen.dart';
-import 'package:mindmate/features/home/home_screen.dart';
 
 import '../core/constants.dart';
 import '../features/splash/splash_screen.dart';
@@ -30,21 +27,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.welcome,
       builder: (context, state) => const WelcomeScreen(),
     ),
-    
-    GoRoute(
-      path: AppRoutes.login,
-      builder: (context, state) => const LoginScreen(),
-    ),
-
-    GoRoute(
-      path: AppRoutes.register,
-      builder: (context, state) => const RegisterScreen(),
-    ),
-
-    GoRoute(
-      path: AppRoutes.home,
-      builder: (context, state) => const HomeScreen(),
-    ),
+    // Aquí se añadirán más rutas como login, registro, perfil, etc.
+    // GoRoute(
+    //   path: AppRoutes.login,
+    //   builder: (context, state) => const LoginScreen(),
+    // ),
   ],
 
   // Puedes añadir redirecciones condicionales aquí (ej: si no está logueado)
