@@ -68,7 +68,7 @@ class WelcomeScreen extends StatelessWidget {
               // Botón de regisro
               OutlinedButton(
                 onPressed: () {
-                  context.go('register');
+                  context.go('/register');
                 },
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
