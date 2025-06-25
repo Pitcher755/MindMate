@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/core/constants.dart';
+import 'package:mindmate/features/auth/widgets/google_loading_button.dart';
 import 'package:mindmate/features/auth/widgets/login_form.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -34,7 +35,7 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Botón de Google
-                  // const GoogleLoadingButton(),
+                  const GoogleLoadingButton(keepLoggedIn: false),
                 ],
               ),
             ),

@@ -44,14 +44,22 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
     }
 
     // Llama al controlador para registrar
+    try {
     ref
         .read(authControllerProvider.notifier)
         .registerUser(
           context: context,
           email: email,
           password: password,
-          onSuccess: widget.onNext, // Pasa a la siguiente pantalla si va bien
+          onSuccess: () {
+            if (mounted) {
+              widget.onNext();
+            }
+          }
         );
+    } catch (e) {
+      showSnackBar(context, 'Error: ${e.toString()}');
+    }
   }
 
   void _registerWithGoogle() {

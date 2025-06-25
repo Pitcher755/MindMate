@@ -92,7 +92,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               prefixIcon: Icon(Icons.lock),
               suffixIcon: IconButton(
                 icon: Icon(
-                  showPassword ? Icons.visibility_off : Icons.visibility,
+                  showPassword ? Icons.visibility : Icons.visibility_off,
                 ),
                 onPressed: () {
                   setState(() {
