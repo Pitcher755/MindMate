@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindmate/core/constants.dart';
 import 'package:mindmate/features/auth/services/auth_service.dart';
 import 'package:mindmate/models/user_model.dart';
 
@@ -22,6 +24,8 @@ final authControllerProvider = NotifierProvider<AuthController, User?>(() {
 // Clase encargada de controlar la lógica de autenticación
 class AuthController extends Notifier<User?> {
   AuthService get _authService => ref.read(authServiceProvider);
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Estado inicial (null significa no autenticado)
   @override
@@ -130,9 +134,22 @@ class AuthController extends Notifier<User?> {
       goals: _goals,
       mood: _mood ?? '',
       isAnonymous: false,
-      
     );
 
-    await _authService.saveUserToFirestore(user, profileImageFile: _profileImageFile);
+    await _authService.saveUserToFirestore(
+      user,
+      profileImageFile: _profileImageFile,
+    );
+  }
+
+  // Comprueba si el documento de usuario existe en Firestore
+  Future<bool> checkUserDocumentExists(String uid) async {
+    try {
+      final doc = await _firestore.collection(FirestoreCollections.users).doc(uid).get();
+      return doc.exists;
+    } catch (e) {
+      debugPrint('Error al comprobar existencia de usuario: $e');
+      return false;
+    }
   }
 }
