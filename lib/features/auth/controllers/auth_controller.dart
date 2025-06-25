@@ -130,9 +130,11 @@ class AuthController extends Notifier<User?> {
       goals: _goals,
       mood: _mood ?? '',
       isAnonymous: false,
-      
     );
 
-    await _authService.saveUserToFirestore(user, profileImageFile: _profileImageFile);
+    await _authService.saveUserToFirestore(
+      user,
+      profileImageFile: _profileImageFile,
+    );
   }
 }
