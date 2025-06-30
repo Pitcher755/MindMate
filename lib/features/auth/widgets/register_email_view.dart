@@ -21,7 +21,7 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
-  void _registerWithEmail() {
+  Future<void> _registerWithEmail() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
@@ -43,17 +43,39 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
       return;
     }
 
-    // Llama al controlador para registrar
-    ref
-        .read(authControllerProvider.notifier)
-        .registerUser(
-          context: context,
-          email: email,
-          password: password,
-          onSuccess: widget.onNext, // Pasa a la siguiente pantalla si va bien
-        );
+    
+      // Muestra indicador de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .registerUser(
+            email: email,
+            password: password,
+            context: context,
+            onSuccess: () {
+              if (mounted) {
+                // Cerrar el diálogo de carga
+                Navigator.of(context).pop();
+                // Navegar
+                widget.onNext();
+              }
+            },
+          );
+    } catch (e) {
+      if (mounted) {
+        // Cierra el diálogo de carga en caso de error
+        Navigator.of(context).pop();
+        showSnackBar(context, "Error al registrar: ${e.toString()}");
+      }
+    }
   }
 
+  // Registro con Google
   void _registerWithGoogle() {
     ref
         .read(authControllerProvider.notifier)
@@ -65,7 +87,6 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
     return Center(
       child: SingleChildScrollView(
         child: Card(
-          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.radius),
           ),
@@ -146,5 +167,13 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }

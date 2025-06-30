@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindmate/core/constants.dart';
 import 'package:mindmate/features/auth/services/auth_service.dart';
 import 'package:mindmate/models/user_model.dart';
 
@@ -23,6 +25,8 @@ final authControllerProvider = NotifierProvider<AuthController, User?>(() {
 class AuthController extends Notifier<User?> {
   AuthService get _authService => ref.read(authServiceProvider);
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   // Estado inicial (null significa no autenticado)
   @override
   User? build() {
@@ -36,11 +40,20 @@ class AuthController extends Notifier<User?> {
     required BuildContext context, // Para navegación
     VoidCallback? onSuccess,
   }) async {
-    final user = await _authService.registerWithEmail(email, password);
-    if (user != null) {
-      state = user; // Actualizamos el estado directamente
+    try {
+      // Muestra loading
+      final user = await _authService.registerWithEmail(email, password);
+
+      if (user != null) {
+        state = user; // Actualiza el estado
+        onSuccess?.call(); // LLama al callback de éxito
+        return user;
+      }
+      return null;
+    } catch (e) {
+      // Oculta loading y muestra error
+      rethrow; // Relanza el error para manejarlo en el widget
     }
-    return user;
   }
 
   // Login con email y contraseña
@@ -130,9 +143,22 @@ class AuthController extends Notifier<User?> {
       goals: _goals,
       mood: _mood ?? '',
       isAnonymous: false,
-      
     );
 
-    await _authService.saveUserToFirestore(user, profileImageFile: _profileImageFile);
+    await _authService.saveUserToFirestore(
+      user,
+      profileImageFile: _profileImageFile,
+    );
+  }
+
+  // Comprueba si el documento de usuario existe en Firestore
+  Future<bool> checkUserDocumentExists(String uid) async {
+    try {
+      final doc = await _firestore.collection(FirestoreCollections.users).doc(uid).get();
+      return doc.exists;
+    } catch (e) {
+      debugPrint('Error al comprobar existencia de usuario: $e');
+      return false;
+    }
   }
 }

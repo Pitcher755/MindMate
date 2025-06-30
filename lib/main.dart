@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindmate/core/app_theme.dart';
 import 'package:mindmate/firebase_options.dart';
+import 'package:mindmate/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
