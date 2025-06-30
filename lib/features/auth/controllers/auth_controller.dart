@@ -40,11 +40,20 @@ class AuthController extends Notifier<User?> {
     required BuildContext context, // Para navegación
     VoidCallback? onSuccess,
   }) async {
-    final user = await _authService.registerWithEmail(email, password);
-    if (user != null) {
-      state = user; // Actualizamos el estado directamente
+    try {
+      // Muestra loading
+      final user = await _authService.registerWithEmail(email, password);
+
+      if (user != null) {
+        state = user; // Actualiza el estado
+        onSuccess?.call(); // LLama al callback de éxito
+        return user;
+      }
+      return null;
+    } catch (e) {
+      // Oculta loading y muestra error
+      rethrow; // Relanza el error para manejarlo en el widget
     }
-    return user;
   }
 
   // Login con email y contraseña
