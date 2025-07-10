@@ -6,21 +6,28 @@ import 'package:mindmate/features/auth/widgets/register_goals_view.dart';
 import 'package:mindmate/features/auth/widgets/register_profile_view.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+  final int viewIndex;
+
+  const RegisterScreen({super.key, this.viewIndex = 0});
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+  late final PageController _pageController; // = PageController();
+  late int _currentPage; //= 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = widget.viewIndex;
+    _pageController = PageController(initialPage: widget.viewIndex);
+  }
 
   void nextPage() {
     if (_currentPage < 2) {
-      setState(() {
-        _currentPage++;
-      });
+      setState(() => _currentPage++);
       _pageController.animateToPage(
         _currentPage,
         duration: const Duration(milliseconds: 300),
@@ -31,9 +38,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   void previousPage() {
     if (_currentPage > 0) {
-      setState(() {
-        _currentPage--;
-      });
+      setState(() => _currentPage--);
       _pageController.animateToPage(
         _currentPage,
         duration: Duration(milliseconds: 300),
@@ -42,14 +47,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
+  Color _backgroundColor(int page) {
+    switch (page) {
+      case 0:
+        return AppColors.accentBlue;
+      case 1:
+        return AppColors.accentGreen;
+      case 2:
+        return AppColors.accentYellow;
+      default:
+        return AppColors.background;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _currentPage == 0
-          ? AppColors.accentBlue
-          : _currentPage == 1
-          ? AppColors.accentGreen
-          : AppColors.accentYellow,
+      backgroundColor: _backgroundColor(_currentPage),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

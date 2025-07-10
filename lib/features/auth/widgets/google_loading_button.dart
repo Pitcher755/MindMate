@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindmate/core/app_colors.dart';
+import 'package:mindmate/core/constants.dart';
 import 'package:mindmate/core/utils.dart';
 import 'package:mindmate/features/auth/controllers/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,10 +42,12 @@ class _GoogleLoadingButtonState extends ConsumerState<GoogleLoadingButton> {
 
       if (exists) {
         // Usuario ya está registrado -> HomeScreen
-        context.go('/home');
+        context.go(AppRoutes.home);
       } else {
         // Usuario nuevo -> Continuar registro (formulario)
-        context.go('/register'); //***********************REVISAR*********** */
+        // ref.read(authControllerProvider.notifier).updateUid(user.uid);
+        // ref.read(authControllerProvider.notifier).updateEmail(user.email ?? '');
+        context.go(AppRoutes.registerProfile); // Dirige a la vista 2 del registro
       }
     } else {
       if (mounted) {
