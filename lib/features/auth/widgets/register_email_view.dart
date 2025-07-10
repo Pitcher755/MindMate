@@ -4,6 +4,7 @@ import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/core/constants.dart';
 import 'package:mindmate/core/utils.dart';
 import 'package:mindmate/features/auth/controllers/auth_controller.dart';
+import 'package:mindmate/features/auth/widgets/google_loading_button.dart';
 
 class RegisterEmailView extends ConsumerStatefulWidget {
   final VoidCallback onNext;
@@ -43,13 +44,12 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
       return;
     }
 
-    
-      // Muestra indicador de carga
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
+    // Muestra indicador de carga
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
     try {
       await ref
           .read(authControllerProvider.notifier)
@@ -73,13 +73,6 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
         showSnackBar(context, "Error al registrar: ${e.toString()}");
       }
     }
-  }
-
-  // Registro con Google
-  void _registerWithGoogle() {
-    ref
-        .read(authControllerProvider.notifier)
-        .signInWithGoogle(context: context, onSuccess: widget.onNext);
   }
 
   @override
@@ -156,11 +149,15 @@ class _RegisterEmailViewState extends ConsumerState<RegisterEmailView> {
                   child: const Text('Registrarme'),
                 ),
                 const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: _registerWithGoogle,
-                  icon: const Icon(Icons.g_mobiledata),
-                  label: const Text('Registrarme con google'),
+                // Separador visual
+                const Text(
+                  "o",
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
+                const SizedBox(height: 16),
+
+                // Botón de Google
+                const GoogleLoadingButton(keepLoggedIn: false),
               ],
             ),
           ),

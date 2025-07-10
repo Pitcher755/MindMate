@@ -32,6 +32,16 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.register,
       builder: (context, state) => const RegisterScreen(),
+      routes: [
+        GoRoute(
+          path: 'profile', // /register/profile
+          builder: (context, state) => const RegisterScreen(viewIndex: 1),
+        ),
+        GoRoute(
+          path: 'goals', // /register/goals
+          builder: (context, state) => const RegisterScreen(viewIndex: 2),
+        ),
+      ],
     ),
 
     GoRoute(

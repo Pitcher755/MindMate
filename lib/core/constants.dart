@@ -28,7 +28,9 @@ class AppRoutes {
   static const String welcome = '/welcome';
   static const String login = '/login';
   static const String register = '/register';
+  static const String registerProfile = '/register/profile';
+  static const String registerGoals = '/register/goals';
   static const String profile = '/profile';
   static const String home = '/home';
-  static const String profileview = '/profileview';
+  // static const String profileview = '/profileview';
 }
