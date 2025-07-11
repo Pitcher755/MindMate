@@ -19,4 +19,5 @@ class AppColors {
   static const Color textSecondaryDark = Color(0xFFBDBDBD);
 
   static const Color white = Colors.white;
+  static const Color grey = Colors.grey;
 }
