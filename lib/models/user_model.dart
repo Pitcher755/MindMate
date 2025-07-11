@@ -33,10 +33,12 @@ class UserModel {
       'name': name,
       'profileImageUrl': profileImageUrl,
       'goals': goals,
+      'mood' : mood,
       // 'createdAt': createdAt.toIso8601String(),
-      'isAnonymoud': isAnonymous,
+      'isAnonymous': isAnonymous,
       'completedChallenges': completedChallenges ?? [],
       'moodHistory': moodHistory ?? [],
+      
     };
   }
 
@@ -50,6 +52,7 @@ class UserModel {
       name: data['name'],
       profileImageUrl: data['profileImageUrl'],
       goals: List<String>.from(data['goals']),
+      mood: data['mood'],
       // createdAt: DateTime.parse(data['createdAt']),
       isAnonymous: data['isAnonymous'] ?? false,
       completedChallenges: (data['completedChallenges'] as List?)
@@ -71,7 +74,7 @@ class UserModel {
       name: name ?? this.name,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       goals: goals ?? this.goals,
-      mood: mood,
+      mood: mood ?? this.mood,
       isAnonymous: false,
     );
   }

@@ -56,6 +56,8 @@ class _RegisterGoalsViewState extends ConsumerState<RegisterGoalsView> {
         .read(authControllerProvider.notifier)
         .updatePartialUserData(goals: selectedGoals, mood: selectedMood);
 
+        print('🧠 Mood enviado al controlador: $selectedMood'); // DEPURACION
+
     setState(() => isLoading = true);
 
     // Obtiene el uid y el email del usuario actual
@@ -143,10 +145,10 @@ class _RegisterGoalsViewState extends ConsumerState<RegisterGoalsView> {
                               fontSize: 18.0,
                             ),
                           ),
-                        ),
+                        )
                       )
                       .toList(),
-                  onChanged: (String? newValue) {
+                  onChanged: (newValue) {
                     setState(() {
                       selectedMood = newValue;
                     });

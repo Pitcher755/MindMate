@@ -135,6 +135,8 @@ class AuthController extends Notifier<User?> {
   }
 
   Future<void> submitRegistration(String uid, String email) async {
+    print('🔥 mood final guardado en Firestore: $_mood'); // DEPURACIÓN 
+
     final user = UserModel(
       uid: uid,
       email: email,
