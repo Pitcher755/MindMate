@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/home/widgets/header_widget.dart';
+import 'package:mindmate/features/home/widgets/show_daily_mood_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     // Muestra el diálogo de estado de ánimo al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // showDailyMoodDialog(context);
+      showDailyMoodDialog(context);
     });
   }
 

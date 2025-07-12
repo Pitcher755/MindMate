@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,28 +10,39 @@ class HeaderWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authControllerProvider);
+    final userAsync = ref.watch(userModelProvider);
 
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 28,
-          backgroundImage: user?.photoURL != null
-              ? NetworkImage(user!.photoURL!)
-              : const AssetImage('assets/icons/avatar_placeholder.png')
-                    as ImageProvider,
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            '¡Hola, ${user?.displayName ?? 'Amig@'}!',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+    return userAsync.when(
+      data: (user) {
+        final name = user?.name ?? 'Amig@';
+        final profileImage =
+            user?.profileImageUrl ??
+            FirebaseAuth.instance.currentUser?.photoURL;
+
+        return Row(
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundImage: profileImage != null
+                  ? NetworkImage(profileImage)
+                  : const AssetImage('assets/icons/avatar_placeholder.png')
+                        as ImageProvider,
             ),
-          ),
-        ),
-      ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '¡Hola, $name!',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const CircularProgressIndicator(),
+      error: (e, _) => const Text('Error al cargar usuario'),
     );
   }
 }

@@ -21,6 +21,19 @@ final authControllerProvider = NotifierProvider<AuthController, User?>(() {
   return AuthController();
 });
 
+final userModelProvider = FutureProvider<UserModel?>((ref) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return null;
+
+  final doc = await FirebaseFirestore.instance
+  .collection(FirestoreCollections.users)
+  .doc(uid)
+  .get();
+
+  if (!doc.exists) return null;
+  return UserModel.fromDocument(doc);
+});
+
 // Clase encargada de controlar la lógica de autenticación
 class AuthController extends Notifier<User?> {
   AuthService get _authService => ref.read(authServiceProvider);
