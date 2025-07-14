@@ -26,13 +26,26 @@ final userModelProvider = FutureProvider<UserModel?>((ref) async {
   if (uid == null) return null;
 
   final doc = await FirebaseFirestore.instance
-  .collection(FirestoreCollections.users)
-  .doc(uid)
-  .get();
+      .collection(FirestoreCollections.users)
+      .doc(uid)
+      .get();
 
   if (!doc.exists) return null;
   return UserModel.fromDocument(doc);
 });
+
+  final userDataProvider = FutureProvider<UserModel>((ref) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) throw Exception('Usuario no autenticado');
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    if (!doc.exists) throw Exception('Documento no encontrado');
+
+    return UserModel.fromDocument(doc);
+  });
 
 // Clase encargada de controlar la lógica de autenticación
 class AuthController extends Notifier<User?> {
@@ -148,7 +161,7 @@ class AuthController extends Notifier<User?> {
   }
 
   Future<void> submitRegistration(String uid, String email) async {
-    print('🔥 mood final guardado en Firestore: $_mood'); // DEPURACIÓN 
+    print('🔥 mood final guardado en Firestore: $_mood'); // DEPURACIÓN
 
     final user = UserModel(
       uid: uid,
@@ -169,11 +182,16 @@ class AuthController extends Notifier<User?> {
   // Comprueba si el documento de usuario existe en Firestore
   Future<bool> checkUserDocumentExists(String uid) async {
     try {
-      final doc = await _firestore.collection(FirestoreCollections.users).doc(uid).get();
+      final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(uid)
+          .get();
       return doc.exists;
     } catch (e) {
       debugPrint('Error al comprobar existencia de usuario: $e');
       return false;
     }
   }
+
+
 }

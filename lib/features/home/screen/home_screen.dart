@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindmate/core/app_colors.dart';
+import 'package:mindmate/features/auth/controllers/auth_controller.dart';
 import 'package:mindmate/features/home/widgets/header_widget.dart';
+import 'package:mindmate/features/home/widgets/mood_card.dart';
 import 'package:mindmate/features/home/widgets/show_daily_mood_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -31,19 +33,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userAsync = ref.watch(userDataProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              HeaderWidget(),
-              SizedBox(height: 20),
-              // Próximos widgets aquí
-            ],
+        child: userAsync.when(
+          data: (user) => SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 20.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const HeaderWidget(),
+                SizedBox(height: 20),
+                MoodCard(mood: user.mood ?? '', userName: user.name),
+                SizedBox(height: 24),
+                // Próximos widgets aquí
+              ],
+            ),
           ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
