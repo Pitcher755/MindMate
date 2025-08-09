@@ -21,7 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     // Muestra el diálogo de estado de ánimo al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDailyMoodDialog(context);
+      showDailyMoodDialog(context, ref);
     });
   }
 
@@ -48,10 +48,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const HeaderWidget(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+                // Pasar mood y userName a MoodCard, este consulta el provider
                 MoodCard(mood: user.mood ?? '', userName: user.name),
-                SizedBox(height: 24),
-                // Próximos widgets aquí
+                const SizedBox(height: 24),
               ],
             ),
           ),

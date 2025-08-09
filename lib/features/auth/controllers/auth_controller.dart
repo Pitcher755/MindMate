@@ -34,18 +34,18 @@ final userModelProvider = FutureProvider<UserModel?>((ref) async {
   return UserModel.fromDocument(doc);
 });
 
-  final userDataProvider = FutureProvider<UserModel>((ref) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) throw Exception('Usuario no autenticado');
+final userDataProvider = FutureProvider<UserModel>((ref) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) throw Exception('Usuario no autenticado');
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
-    if (!doc.exists) throw Exception('Documento no encontrado');
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get();
+  if (!doc.exists) throw Exception('Documento no encontrado');
 
-    return UserModel.fromDocument(doc);
-  });
+  return UserModel.fromDocument(doc);
+});
 
 // Clase encargada de controlar la lógica de autenticación
 class AuthController extends Notifier<User?> {
@@ -163,6 +163,7 @@ class AuthController extends Notifier<User?> {
   Future<void> submitRegistration(String uid, String email) async {
     print('🔥 mood final guardado en Firestore: $_mood'); // DEPURACIÓN
 
+    final now = DateTime.now();
     final user = UserModel(
       uid: uid,
       email: email,
@@ -171,6 +172,9 @@ class AuthController extends Notifier<User?> {
       goals: _goals,
       mood: _mood ?? '',
       isAnonymous: false,
+      moodHistory: [
+        {'date': Timestamp.fromDate(now), 'mood': _mood ?? ''},
+      ],
     );
 
     await _authService.saveUserToFirestore(
@@ -193,5 +197,18 @@ class AuthController extends Notifier<User?> {
     }
   }
 
+  Future<void> updateDailyMood(String newMood) async {
+    final uid = currentUID;
+    if (uid == null) return;
 
+    final now = DateTime.now();
+    final moodEntry = {'date': Timestamp.fromDate(now), 'mood': newMood};
+
+    final docRef = _firestore.collection(FirestoreCollections.users).doc(uid);
+
+    await docRef.update({
+      'mood': newMood,
+      'moodHistory': FieldValue.arrayUnion([moodEntry]),
+    });
+  }
 }
