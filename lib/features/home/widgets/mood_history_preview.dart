@@ -10,49 +10,69 @@ class MoodHistoryPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final historyAsync = ref.watch(moodHistoryProvider);
+    final moodHistoryAsync = ref.watch(moodHistoryProvider);
 
-    return historyAsync.when(
+    return moodHistoryAsync.when(
       data: (history) {
         if (history.isEmpty) {
           return _buildEmpty(context);
         }
 
-        final latestMood = history.first;
-        final mood = latestMood['mood'] ?? 'Neutro';
-        final moodEmoji = _getMoodEmoji(mood);
+        final recent = history.take(5).toList();
 
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => MoodHistoryFull(initialMood: mood),
-              ),
+              MaterialPageRoute(builder: (_) => const MoodHistoryFull()),
             );
           },
           child: Hero(
             tag: 'moodHistoryHero',
-            child: Container(
-              decoration: BoxDecoration(
-                color: _getMoodColor(mood),
+            child: Card(
+              color: AppColors.white,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(moodEmoji, style: const TextStyle(fontSize: 40)),
-                  const SizedBox(height: 8),
-                  Text(
-                    mood,
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: recent.map((m) {
+                    final mood = m['mood'] ?? 'neutro';
+                    final date = m['date'] as DateTime;
+                    final emoji = _getMoodEmoji(mood);
+                    final bgColor = _getMoodColor(mood);
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: const EdgeInsets.all(6),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            radius: 22,
+                            backgroundColor: bgColor.withValues(alpha: 0.2),
+                            child: Text(
+                              emoji,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${date.day}/${date.month}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ),
