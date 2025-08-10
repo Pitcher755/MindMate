@@ -4,6 +4,7 @@ import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/auth/controllers/auth_controller.dart';
 import 'package:mindmate/features/home/widgets/header_widget.dart';
 import 'package:mindmate/features/home/widgets/mood_card.dart';
+import 'package:mindmate/features/home/widgets/mood_history_preview.dart';
 import 'package:mindmate/features/home/widgets/show_daily_mood_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -52,6 +53,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 // Pasar mood y userName a MoodCard, este consulta el provider
                 MoodCard(mood: user.mood ?? '', userName: user.name),
                 const SizedBox(height: 24),
+
+                // Cuadrícula de widgets moodHistory y .....
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  children: const [
+                    MoodHistoryPreview(),
+                    Placeholder(), // <= Siguiente widget
+                  ],
+                ),
               ],
             ),
           ),
