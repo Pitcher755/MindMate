@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/home/provider/mood_history_provider.dart';
 
-class MoodHistoryFull extends ConsumerWidget {
+class MoodHistoryFull extends ConsumerStatefulWidget {
   const MoodHistoryFull({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MoodHistoryFull> createState() => _MoodHistoryFullState();
+}
+
+class _MoodHistoryFullState extends ConsumerState<MoodHistoryFull> {
+  // Estado para filtrar la vista (todo, semanal, rango de fechas)
+  String _filterMode = 'todo';
+
+  @override
+  Widget build(BuildContext context) {
     final moodHistoryAsync = ref.watch(moodHistoryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Historial de estados'),
+        title: const Text('Mis estados de ánimo'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -23,40 +30,36 @@ class MoodHistoryFull extends ConsumerWidget {
         child: moodHistoryAsync.when(
           data: (history) {
             if (history.isEmpty) {
-              return const Center(child: Text('No hay historial disponible'));
+              return const Center(child: Text('No hay historial disponible.'));
             }
-            return ListView.builder(
+
+            final filteredHistory = history;
+
+            return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: history.length,
+              itemCount: filteredHistory.length,
+              separatorBuilder: (_, __) => const Divider(),
               itemBuilder: (context, index) {
-                final item = history[index];
-                final mood = item['mood'] ?? 'Neutro';
+                final item = filteredHistory[index];
+                final mood = (item['mood'] ?? 'Neutro').toString();
                 final date = (item['date'] as DateTime?) ?? DateTime.now();
-                final emoji = _getMoodEmoji(mood);
 
-                final isLast = index == history.length - 1;
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 18,
-                          child: Text(emoji, style: TextStyle(fontSize: 18)),
-                        ),
-                        if (!isLast)
-                          Container(
-                            width: 2,
-                            height: 50,
-                            color: Colors.grey.shade300,
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _getMoodColor(mood).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _getMoodEmoji(mood),
+                        style: const TextStyle(fontSize: 44),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -74,14 +77,42 @@ class MoodHistoryFull extends ConsumerWidget {
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Theme.of(context).cardColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              tooltip: 'Ver todo',
+              onPressed: () => setState(() => _filterMode = 'todo'),
+              color: _filterMode == 'todo' ? AppColors.primary : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.calendar_view_week),
+              tooltip: 'Ver semanal',
+              onPressed: () => setState(() => _filterMode = 'semanal'),
+              color: _filterMode == 'semanal' ? AppColors.primary : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.date_range),
+              tooltip: 'Filtrar por fecha',
+              onPressed: () {
+                // Abrir un Date picker para personalizar el rango de fechas, mas adelante
+              },
+              color: _filterMode == 'rango' ? AppColors.primary : null,
+            ),
+          ],
         ),
       ),
     );
@@ -103,6 +134,25 @@ class MoodHistoryFull extends ConsumerWidget {
         return '💪';
       default:
         return '🙂';
+    }
+  }
+
+  Color _getMoodColor(String mood) {
+    switch (mood.toLowerCase()) {
+      case 'feliz':
+        return AppColors.primary;
+      case 'tranquilo':
+        return Colors.blueAccent;
+      case 'estresado':
+        return Colors.orangeAccent;
+      case 'triste':
+        return Colors.indigo;
+      case 'ansioso':
+        return Colors.pinkAccent;
+      case 'motivado':
+        return Colors.green;
+      default:
+        return AppColors.grey;
     }
   }
 }

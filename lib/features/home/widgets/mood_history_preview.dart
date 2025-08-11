@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/home/provider/mood_history_provider.dart';
 import 'package:mindmate/features/home/widgets/mood_history_full.dart';
@@ -15,101 +15,112 @@ class MoodHistoryPreview extends ConsumerWidget {
     return moodHistoryAsync.when(
       data: (history) {
         if (history.isEmpty) {
-          return _buildEmpty(context);
+          // Si no hay historial, muestra un recuadro sumple
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: const Center(
+              child: Text(
+                'Sin historial de estados',
+                style: TextStyle(color: AppColors.grey),
+              ),
+            ),
+          );
         }
 
-        final recent = history.take(5).toList();
+        final latestMood = history.first;
+        final mood = (latestMood['mood'] ?? 'Neutro').toString();
+        final moodEmoji = _getMoodEmoji(mood);
+        final date = (latestMood['date'] as DateTime?) ?? DateTime.now();
 
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const MoodHistoryFull()),
+              MaterialPageRoute(
+                builder: (_) => const MoodHistoryFull(),
+                ),
             );
           },
           child: Hero(
             tag: 'moodHistoryHero',
-            child: Card(
-              color: AppColors.white,
-              shape: RoundedRectangleBorder(
+            child: Container(
+              decoration: BoxDecoration(
+                color: _getMoodColor(mood),
                 borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: recent.map((m) {
-                    final mood = m['mood'] ?? 'neutro';
-                    final date = m['date'] as DateTime;
-                    final emoji = _getMoodEmoji(mood);
-                    final bgColor = _getMoodColor(mood);
-
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      padding: const EdgeInsets.all(6),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor: bgColor.withValues(alpha: 0.2),
-                            child: Text(
-                              emoji,
-                              style: const TextStyle(fontSize: 20),
-                            ),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Estado actual',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(moodEmoji, style: const TextStyle(fontSize: 46)),
+                        const SizedBox(height: 2),
+                        Text(
+                          mood,
+                          style: const TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "${date.day}/${date.month}",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.grey,
-                            ),
-                          ),
-                        ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          DateFormat('dd MMM yyyy').format(date),
+                          style:
+                          const TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      'Ver más 🔎',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w500,
+                        // decoration: TextDecoration.underline,
                       ),
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
           ),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _buildError(e.toString()),
-    );
-  }
-
-  Widget _buildEmpty(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.grey.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Center(
-        child: Text('Sin historial', style: TextStyle(color: AppColors.grey)),
-      ),
-    );
-  }
-
-  Widget _buildError(String message) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.errorRed.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Text(
-          'Error: $message',
-          style: const TextStyle(color: AppColors.errorRed),
+      error: (e, _) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.errorRed.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Text(
+            'Error: $e',
+            style: const TextStyle(color: AppColors.errorRed),
+          ),
         ),
       ),
     );
   }
-
+   
   String _getMoodEmoji(String mood) {
     switch (mood.toLowerCase()) {
       case 'feliz':
