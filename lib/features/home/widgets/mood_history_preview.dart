@@ -40,67 +40,71 @@ class MoodHistoryPreview extends ConsumerWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => const MoodHistoryFull(),
-                ),
+              MaterialPageRoute(builder: (_) => const MoodHistoryFull()),
             );
           },
           child: Hero(
             tag: 'moodHistoryHero',
-            child: Container(
-              decoration: BoxDecoration(
-                color: _getMoodColor(mood),
+            child: Material(
+              color: Colors.transparent,
+            child: SizedBox(
+              width: double.infinity, // Se adapta al padre
+              height: 160, // altura fija para la animación
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Estado actual',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
+                child: Container(
+                  clipBehavior: Clip.hardEdge, // Evita que salga contenido
+                  decoration: BoxDecoration(
+                    color: _getMoodColor(mood),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(moodEmoji, style: const TextStyle(fontSize: 46)),
-                        const SizedBox(height: 2),
-                        Text(
-                          mood,
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Ánimo actual',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(moodEmoji, style: const TextStyle(fontSize: 46)),
+                      const SizedBox(height: 2),
+                      Text(
+                        mood,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        DateFormat('dd MMM yyyy').format(date),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Spacer(), // empuja lo siquiente al fondo
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          'Ver más 🔎',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          DateFormat('dd MMM yyyy').format(date),
-                          style:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Text(
-                      'Ver más 🔎',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontWeight: FontWeight.w500,
-                        // decoration: TextDecoration.underline,
                       ),
-                    ),
-                  )
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ),),
           ),
         );
       },
@@ -120,7 +124,7 @@ class MoodHistoryPreview extends ConsumerWidget {
       ),
     );
   }
-   
+
   String _getMoodEmoji(String mood) {
     switch (mood.toLowerCase()) {
       case 'feliz':

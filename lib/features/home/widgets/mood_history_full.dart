@@ -27,101 +27,120 @@ class _MoodHistoryFullState extends ConsumerState<MoodHistoryFull> {
       ),
       body: Hero(
         tag: 'moodHistoryHero',
-        child: moodHistoryAsync.when(
-          data: (history) {
-            if (history.isEmpty) {
-              return const Center(child: Text('No hay historial disponible.'));
-            }
+        transitionOnUserGestures: true,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(0),
+            ),
 
-            final filteredHistory = _applyFilter(history);
+            child: moodHistoryAsync.when(
+              data: (history) {
+                if (history.isEmpty) {
+                  return const Center(
+                    child: Text('No hay historial disponible.'),
+                  );
+                }
 
-            return Stack(
-              children: [
-                // Línea vertical en el centro para la línea de vida
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Container(width: 3, color: Colors.grey.shade300),
-                  ),
-                ),
+                final filteredHistory = _applyFilter(history);
 
-                ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: filteredHistory.length,
-                  itemBuilder: (context, index) {
-                    final item = filteredHistory[index];
-                    final mood = (item['mood'] ?? 'Neutro').toString();
-                    final date = (item['date'] as DateTime?) ?? DateTime.now();
-                    final moodColor = _getMoodColor(
-                      mood,
-                    ).withValues(alpha: 0.2);
-                    final isLeft = index % 2 == 0;
+                return Stack(
+                  children: [
+                    // Línea vertical en el centro para la línea de vida
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Container(width: 3, color: Colors.grey.shade300),
+                      ),
+                    ),
 
-                    return Padding(
+                    ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: SizedBox(
-                        height: 80,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Emoji y fecha (siempre centrados)
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
+                      itemCount: filteredHistory.length,
+                      itemBuilder: (context, index) {
+                        final item = filteredHistory[index];
+                        final mood = (item['mood'] ?? 'Neutro').toString();
+                        final date =
+                            (item['date'] as DateTime?) ?? DateTime.now();
+                        final moodColor = _getMoodColor(
+                          mood,
+                        ).withValues(alpha: 0.2);
+                        final isLeft = index % 2 == 0;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: SizedBox(
+                            height: 80,
+                            child: Stack(
+                              alignment: Alignment.center,
                               children: [
-                                Text(
-                                  _getMoodEmoji(mood),
-                                  style: const TextStyle(fontSize: 40),
+                                // Emoji y fecha (siempre centrados)
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _getMoodEmoji(mood),
+                                      style: const TextStyle(fontSize: 40),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      DateFormat('dd MMM yyyy').format(date),
+                                      style: const TextStyle(
+                                        color: AppColors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  DateFormat('dd MMM yyyy').format(date),
-                                  style: const TextStyle(
-                                    color: AppColors.grey,
-                                    fontSize: 12,
+                                // Texto del mood (Izquierda o derecha)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 60,
+                                    right: 60,
+                                  ),
+                                  child: Align(
+                                    alignment: isLeft
+                                        ? Alignment.centerLeft
+                                        : Alignment.centerRight,
+                                    child: Container(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 100,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                        horizontal: 18,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: moodColor,
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Text(
+                                        mood,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            // Texto del mood (Izquierda o derecha)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 60, right: 60),
-                              child: Align(
-                                alignment: isLeft
-                                    ? Alignment.centerLeft
-                                    : Alignment.centerRight,
-                                child: Container(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 100,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 18,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: moodColor,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Text(
-                                    mood,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
+            ),
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
