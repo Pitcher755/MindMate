@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mindmate/core/app_colors.dart';
 import 'package:mindmate/features/home/provider/mood_history_provider.dart';
+import 'package:mindmate/features/home/widgets/mood_weekly_chart.dart';
+
+enum MoodViewMode { list, chart }
 
 class MoodHistoryFull extends ConsumerStatefulWidget {
   const MoodHistoryFull({super.key});
@@ -46,96 +49,120 @@ class _MoodHistoryFullState extends ConsumerState<MoodHistoryFull> {
                   );
                 }
 
-                final filteredHistory = _applyFilter(history);
+                if (_filterMode == 'semanal') {
+                  final now = DateTime.now();
+                  final last7Days = List.generate(7, (i) => now.subtract(Duration(days: 6 - i)));
 
-                return Stack(
-                  children: [
-                    // Línea vertical en el centro para la línea de vida
-                    Positioned.fill(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Container(width: 3, color: Colors.grey.shade300),
+                  // Mapea moods por día
+                  final weeklyData = last7Days.map((day) {
+                    final record = history.firstWhere(
+                      (item) => DateUtils.isSameDay(item['date'] as DateTime, day),
+                      orElse:() => {'date': day, 'mood': null},
+                    );
+                    return record;
+                  }).toList();
+
+                  return MoodWeeklyChart(
+                    weeklyHistory: weeklyData,
+                    getMoodColor: _getMoodColor,
+                    getMoodEmoji: _getMoodEmoji,
+                  );
+                } else {
+                  // Muestra lista (todo o rango)
+                  final filteredHistory = _applyFilter(history);
+
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            width: 3,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
                       ),
-                    ),
+                      ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        itemCount: filteredHistory.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredHistory[index];
+                          final mood = (item['mood'] ?? 'Neutro').toString();
+                          final date =
+                              (item['date'] as DateTime?) ?? DateTime.now();
+                          final moodColor = _getMoodColor(
+                            mood,
+                          ).withValues(alpha: 0.2);
+                          final isLeft = index % 2 == 0;
 
-                    ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      itemCount: filteredHistory.length,
-                      itemBuilder: (context, index) {
-                        final item = filteredHistory[index];
-                        final mood = (item['mood'] ?? 'Neutro').toString();
-                        final date =
-                            (item['date'] as DateTime?) ?? DateTime.now();
-                        final moodColor = _getMoodColor(
-                          mood,
-                        ).withValues(alpha: 0.2);
-                        final isLeft = index % 2 == 0;
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: SizedBox(
-                            height: 80,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Emoji y fecha (siempre centrados)
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      _getMoodEmoji(mood),
-                                      style: const TextStyle(fontSize: 40),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      DateFormat('dd MMM yyyy').format(date),
-                                      style: const TextStyle(
-                                        color: AppColors.grey,
-                                        fontSize: 12,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: SizedBox(
+                              height: 80,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Emoji y fecha (siempre centrados)
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        _getMoodEmoji(mood),
+                                        style: const TextStyle(fontSize: 40),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                // Texto del mood (Izquierda o derecha)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 60,
-                                    right: 60,
-                                  ),
-                                  child: Align(
-                                    alignment: isLeft
-                                        ? Alignment.centerLeft
-                                        : Alignment.centerRight,
-                                    child: Container(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 100,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 18,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: moodColor,
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Text(
-                                        mood,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        DateFormat('dd MMM yyyy').format(date),
                                         style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          color: AppColors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // Texto del mood (Izquierda o derecha)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 60,
+                                      right: 60,
+                                    ),
+                                    child: Align(
+                                      alignment: isLeft
+                                          ? Alignment.centerLeft
+                                          : Alignment.centerRight,
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 100,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                          horizontal: 18,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: moodColor,
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          mood,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                );
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                }
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),

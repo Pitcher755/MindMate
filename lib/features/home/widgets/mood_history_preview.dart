@@ -38,9 +38,15 @@ class MoodHistoryPreview extends ConsumerWidget {
 
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MoodHistoryFull()),
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 600),
+                reverseTransitionDuration: const Duration(milliseconds: 600),
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                FadeTransition(opacity: animation,
+                child: MoodHistoryFull(),
+                ),
+              ),
             );
           },
           child: Hero(
