@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # 🧠 MindMate
 
 ![Estado](https://img.shields.io/badge/estado-en%20desarrollo-yellow)
@@ -445,7 +443,3 @@ Colecciones principales:
 ---
 
 🚀 **MindMate: tu compañero emocional en el bolsillo.**
-
-
-
->>>>>>> 26837fa0fd64bacb72e7aa2b98e27bff61d77fdc
