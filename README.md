@@ -9,7 +9,7 @@
 ![GoRouter](https://img.shields.io/badge/Routing-GoRouter-00A8E8)
 ![iOS/Android](https://img.shields.io/badge/plataformas-iOS%20%7C%20Android-black)
 ![Contribuciones](https://img.shields.io/badge/contribuciones-bienvenidas-brightgreen)
-![Licencia](https://img.shields.io/badge/licencia-GPL v3.0-blue)
+![Licencia](https://img.shields.io/badge/licencia-GPL%20v3.0-blue)
 
 ---
 
