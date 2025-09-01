@@ -24,6 +24,7 @@ dependencies:
   firebase_storage: ^12.4.7
   flutter_riverpod: ^2.6.1
   image_picker: ^1.1.2
+  audioplayers: ^6.5.0
   
 
 dev_dependencies:
