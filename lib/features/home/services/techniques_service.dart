@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,20 +9,18 @@ class TechniquesService {
 
   // Obtiene una técnica random evitando repetidas
   Future<Map<String, dynamic>?> getRandomTechniqueForUser() async {
-
     final user = _auth.currentUser;
     if (user == null) return null;
 
     // Obtiene todas las técnicas
     final snapshot = await _db.collection('techniques').get();
-    final all = snapshot.docs.map((d) => {
-      "id": d.id,
-      ...d.data(),
-    }).toList();
+    final all = snapshot.docs.map((d) => {"id": d.id, ...d.data()}).toList();
 
     // Obtiene las técnicas ya completadas por el usuario
     final userDoc = await _db.collection('users').doc(user.uid).get();
-    final completed = List<String>.from(userDoc.data()?['completedTeChniques'] ?? []);
+    final completed = List<String>.from(
+      userDoc.data()?['completedTeChniques'] ?? [],
+    );
 
     // Filtra solo las que faltan
     final remaining = all.where((t) => !completed.contains(t['id'])).toList();
@@ -55,6 +52,4 @@ class TechniquesService {
       'completedTechniques': [],
     });
   }
-
-  
 }
