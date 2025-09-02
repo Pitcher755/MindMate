@@ -76,28 +76,30 @@ class Technique {
       durationSeconds.hashCode ^
       steps.hashCode;
 
-
-// ---- helpers privados ----
-static int _toInt(dynamic value) {
-  if (value == null) return 0;
-  if (value is int) return value;
-  if (value is double) return value.toInt();
-  return int.tryParse(value.toString()) ?? 0;
-}
-
-static List<String> _parseSteps(dynamic value) {
-  if (value is List) {
-    return value.map((e) => e?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+  // ---- helpers privados ----
+  static int _toInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
   }
-  return const <String>[];
-}
 
-static bool _listEquals(List<String> a, List<String> b) {
-  if (identical(a, b)) return true;
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
+  static List<String> _parseSteps(dynamic value) {
+    if (value is List) {
+      return value
+          .map((e) => e?.toString() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    return const <String>[];
   }
-  return true;
-}
+
+  static bool _listEquals(List<String> a, List<String> b) {
+    if (identical(a, b)) return true;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
 }
